@@ -24,6 +24,7 @@ What `connect()` does:
 ## Machine-wide hook
 
 ```bash
+pip install hugginghub
 hugginghub connect http://my-server:8080 --token hf_...
 hugginghub install-hook     # writes a .pth file into site-packages
 ```

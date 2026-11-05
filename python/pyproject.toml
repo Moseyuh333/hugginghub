@@ -9,7 +9,14 @@ description = "Point huggingface_hub at your own self-hosted HuggingHub server"
 readme = "README.md"
 requires-python = ">=3.9"
 license = { text = "PolyForm-Noncommercial-1.0.0" }
+authors = [{ name = "Empero", email = "bub4tz@hotmail.com" }]
+keywords = ["huggingface", "huggingface_hub", "self-hosted", "model-hub", "git-lfs"]
 dependencies = ["huggingface_hub>=0.23"]
+
+[project.urls]
+Homepage = "https://github.com/empero-org/hugginghub"
+Repository = "https://github.com/empero-org/hugginghub"
+"Built by" = "https://empero.org"
 
 [project.scripts]
 hugginghub = "hugginghub.cli:main"

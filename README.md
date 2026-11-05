@@ -7,6 +7,10 @@
 Models · Datasets · Spaces — with cards, files, git history, discussions and pull requests.
 No billing. No quotas. No account on someone else's machine.
 
+<br>
+
+<img src="docs/twitter-card.png" alt="HuggingHub overview" width="760">
+
 </div>
 
 ---
@@ -109,10 +113,10 @@ by clients.
 
 ## The Python shim
 
-`python/` contains a small package that points `huggingface_hub` at your server:
+`python/` contains a small package ([on PyPI](https://pypi.org/project/hugginghub/)) that points `huggingface_hub` at your server:
 
 ```bash
-pip install ./python
+pip install hugginghub
 hugginghub connect http://my-server:8080 --token hf_...   # saved to ~/.config/hugginghub
 hugginghub install-hook                                   # every Python process picks it up
 ```
