@@ -1,0 +1,13 @@
+{% extends "settings/base.html" %}
+{% block settings %}
+<h2>Profile</h2>
+{% if flash %}<div class="alert ok">{{ flash }}</div>{% endif %}
+<form class="panel" method="post" action="/settings/profile">
+  <label class="field"><span>Username</span><input class="input" value="{{ me.name }}" disabled></label>
+  <label class="field"><span>Full name</span><input class="input" name="fullname" value="{{ user.fullname }}"></label>
+  <label class="field"><span>Email</span><input class="input" type="email" name="email" value="{{ user.email or '' }}"></label>
+  <label class="field"><span>Website</span><input class="input" name="website" value="{{ user.website }}" placeholder="https://"></label>
+  <label class="field"><span>Bio</span><textarea class="input" name="bio" style="min-height:6rem">{{ user.bio }}</textarea></label>
+  <button class="btn dark" type="submit">Save</button>
+</form>
+{% endblock %}

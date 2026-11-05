@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block body %}
+<div class="container page">
+  <div class="thread">
+    <h1 style="font-size:1.5rem;font-weight:700">{{ heading }}</h1>
+    {% if error %}<div class="alert error">{{ error }}</div>{% endif %}
+    <form method="post" action="{{ action }}" class="panel">
+      {% if owner_choice %}
+      <label class="field"><span>Owner</span>
+        <select class="input" name="owner">
+          <option value="{{ me.name }}">{{ me.name }} (you)</option>
+          {% for o in my_orgs %}<option value="{{ o.name }}">{{ o.name }}</option>{% endfor %}
+        </select>
+      </label>
+      {% endif %}
+      {% if not org_name %}
+      <label class="field"><span>{{ "Repository" if owner_choice else "Organization" }} name</span><input class="input" name="name" required pattern="[A-Za-z0-9._-]+" placeholder="{{ 'my-model' if owner_choice else 'my-org' }}"></label>
+      {% endif %}
+      {% if org_name %}
+      <label class="field"><span>Organization name</span><input class="input" name="name" required value="{{ org_name }}" disabled></label>
+      {% endif %}
+      {% if rtype %}
+      <label class="field"><span>License</span>
+        <select class="input" name="license">
+          <option value="">No license</option>
+          {% for l in ["mit","apache-2.0","cc-by-4.0","cc-by-sa-4.0","cc-by-nc-4.0","gpl-3.0","lgpl-3.0","bsd-3-clause","openrail","other"] %}<option>{{ l }}</option>{% endfor %}
+        </select>
+      </label>
+      {% if rtype == "space" %}
+      <label class="field"><span>SDK</span><select class="input" name="sdk">{% for s in ["static","gradio","streamlit","docker"] %}<option>{{ s }}</option>{% endfor %}</select></label>
+      {% endif %}
+      <div class="field"><span>Visibility</span>
+        <label class="radio-card"><input type="radio" name="visibility" value="public" checked><div><b>Public</b><div class="small muted">Anyone on the internet can see this {{ rtype }}.</div></div></label>
+        <label class="radio-card"><input type="radio" name="visibility" value="private"><div><b>Private</b><div class="small muted">Only you or your organization can see it.</div></div></label>
+      </div>
+      {% endif %}
+      <button class="btn dark" type="submit">{{ button }}</button>
+    </form>
+  </div>
+</div>
+{% endblock %}

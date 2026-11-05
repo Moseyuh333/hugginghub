@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block body %}
+<div class="container page">
+  <div class="settings">
+    <nav>
+      <a class="{% if section == 'profile' %}active{% endif %}" href="/settings/profile">Profile</a>
+      <a class="{% if section == 'tokens' %}active{% endif %}" href="/settings/tokens">Access tokens</a>
+      <a class="{% if section == 'password' %}active{% endif %}" href="/settings/password">Password</a>
+      <a class="{% if section == 'orgs' %}active{% endif %}" href="/organizations">Organizations</a>
+      {% if me.is_admin %}
+      <a href="/admin" style="margin-top:.5rem;border-top:1px solid var(--g100);padding-top:.75rem">Administration</a>
+      {% endif %}
+    </nav>
+    <div>{% block settings %}{% endblock %}</div>
+  </div>
+</div>
+{% endblock %}

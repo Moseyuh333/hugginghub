@@ -1,0 +1,75 @@
+{% extends "repo/base.html" %}
+{% import "icons.html" as i %}
+{% block repobody %}
+<div class="container">
+  <div class="repo-body">
+    <div class="repo-main">
+      {% if r.type == "space" %}
+        {% if app_src %}
+        <iframe class="space-frame" src="{{ app_src }}" allow="camera; microphone; clipboard-read; clipboard-write" sandbox="allow-scripts allow-same-origin allow-forms allow-modals" loading="lazy" title="Space app"></iframe>
+        {% else %}
+        <div class="space-badge stopped">
+          <span class="dot"></span> This Space has no running app.
+          <span class="small muted" style="margin-left:.35rem">Push an <code>index.html</code> for a static space, or set an app URL in Settings.</span>
+        </div>
+        {% endif %}
+      {% endif %}
+      {% if readme_html %}
+        <article class="prose">{{ readme_html|safe }}</article>
+      {% else %}
+        <div class="empty-card">
+          <div style="font-size:2rem">🤗</div>
+          <h3 style="margin:.5rem 0">No card yet</h3>
+          <p class="muted small">Add a <code>README.md</code> with YAML front matter to describe this {{ r.type }}.</p>
+        </div>
+      {% endif %}
+    </div>
+    <aside class="repo-side">
+      {% if r.type == "space" %}
+      <div class="side-block">
+        <h3>Runtime</h3>
+        <div class="flex items-center gap-2"><span class="badge {% if app_src %}green{% else %}gray{% endif %}">{% if app_src %}running{% else %}stopped{% endif %}</span><span class="small muted">SDK: {{ r.sdk or "static" }}</span></div>
+      </div>
+      {% endif %}
+      <div class="side-block">
+        <h3>Downloads last month</h3>
+        <div class="big">{{ r.downloads|compact }}</div>
+      </div>
+      <div class="side-block">
+        <h3>Storage</h3>
+        <div class="small">{{ r.used_storage|human_size }}</div>
+      </div>
+      <div class="side-block">
+        <h3>Files info</h3>
+        <a class="btn sm" href="/{{ r.web_path|safe }}/tree/main">Browse {{ file_count }} files</a>
+      </div>
+      <div class="side-block">
+        <h3>Clone</h3>
+        <div class="code" data-copy="git clone {{ base }}/{{ r.web_path|safe }}">git clone {{ base }}/{{ r.web_path|safe }}</div>
+      </div>
+      <div class="side-block">
+        <h3>Use with huggingface_hub</h3>
+        <div class="code">import hugginghub
+hugginghub.connect("{{ base }}", token="hf_...")
+
+from huggingface_hub import snapshot_download
+snapshot_download("{{ r.full_id }}"{% if r.type != "model" %}, repo_type="{{ r.type }}"{% endif %})</div>
+        <div class="xs muted" style="margin-top:.4rem">See <a href="/docs" style="text-decoration:underline">How to use</a> for the other ways to connect.</div>
+      </div>
+      {% if r.type == "dataset" and card["task_categories"] %}
+      <div class="side-block">
+        <h3>Task categories</h3>
+        <div class="flex wrap gap-1">{% for t in card["task_categories"] %}<span class="tag">{{ t }}</span>{% endfor %}</div>
+      </div>
+      {% endif %}
+      <div class="side-block">
+        <h3>Last commit</h3>
+        {% if last_commit %}
+        <div class="small"><a href="/{{ r.web_path|safe }}/commit/{{ last_commit.id }}">{{ last_commit.title }}</a></div>
+        <div class="xs muted">{{ last_commit.date|ago }} · <code>{{ last_commit.id|short }}</code></div>
+        {% else %}<div class="small muted">No commits yet</div>{% endif %}
+      </div>
+    </aside>
+  </div>
+</div>
+{% endblock %}

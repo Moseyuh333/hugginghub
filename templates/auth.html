@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block body %}
+<div class="narrow">
+  <div class="hero-emoji">🤗</div>
+  <h1>{{ heading }}</h1>
+  {% if error %}<div class="alert error">{{ error }}</div>{% endif %}
+  {% if info %}<div class="alert ok">{{ info }}</div>{% endif %}
+  <form method="post" action="{{ action }}" class="panel">
+    {% if not username_fixed %}
+    <label class="field"><span>Username</span><input class="input" name="username" required autocomplete="username" value="{{ username or '' }}"></label>
+    {% endif %}
+    <label class="field"><span>Password</span><input class="input" type="password" name="password" required autocomplete="{{ 'new-password' if action == '/join' else 'current-password' }}"></label>
+    {% if action == "/join" %}
+    <label class="field"><span>Full name (optional)</span><input class="input" name="fullname"></label>
+    <label class="field"><span>Email (optional)</span><input class="input" type="email" name="email"></label>
+    {% endif %}
+    <input type="hidden" name="next" value="{{ next or '' }}">
+    <button class="btn dark" type="submit" style="width:100%">{{ button }}</button>
+  </form>
+  <p class="small muted" style="text-align:center">
+    {% if action == "/login" %}{% if open_signup %}New here? <a href="/join" style="text-decoration:underline">Create an account</a>.{% endif %}
+    {% else %}Already have an account? <a href="/login" style="text-decoration:underline">Log in</a>.{% endif %}
+  </p>
+</div>
+{% endblock %}

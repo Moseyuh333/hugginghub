@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block body %}
+<div class="err-page">
+  <div class="emoji">🤗</div>
+  <h1>Sorry, we can't find the page you are looking for.</h1>
+  <p class="muted">{{ path }}</p>
+  <div class="flex gap-2" style="justify-content:center;margin-top:1.5rem"><a class="btn" href="/">Home</a><a class="btn" href="/models">Browse models</a></div>
+</div>
+{% endblock %}

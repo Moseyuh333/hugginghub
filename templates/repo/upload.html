@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% import "icons.html" as i %}
+{% block body %}
+<div class="container page">
+  <div class="thread">
+    <h1 style="font-size:1.5rem;font-weight:700">{{ "Upload files" if not path else "Edit " + path }}</h1>
+    <p class="muted small">Committing to <b>{{ r.full_id }}</b> on branch <code>{{ rev }}</code>{% if pr %} as a pull request{% endif %}.</p>
+    {% if error %}<div class="alert error">{{ error }}</div>{% endif %}
+    <form method="post" action="/{{ r.web_path|safe }}/upload/{{ rev }}{% if pr %}?pr=1{% endif %}" enctype="multipart/form-data" class="panel">
+      <label class="field"><span>Files</span><input class="input" type="file" name="files" multiple required></label>
+      <label class="field"><span>Commit message</span><input class="input" name="message" placeholder="Upload files"></label>
+      <label class="field"><span>Commit description</span><textarea class="input" name="description" style="min-height:4rem"></textarea></label>
+      <button class="btn dark" type="submit">Commit changes</button>
+    </form>
+    <form method="post" action="/{{ r.web_path|safe }}/new-file/{{ rev }}" class="panel">
+      <h3>Create a new text file</h3>
+      <label class="field"><span>File name</span><input class="input" name="path" placeholder="config.json"></label>
+      <label class="field"><span>Content</span><textarea class="input" name="content" style="min-height:14rem;font-family:var(--mono);font-size:.85rem"></textarea></label>
+      <label class="field"><span>Commit message</span><input class="input" name="message" placeholder="Create file"></label>
+      <button class="btn" type="submit">Create file</button>
+    </form>
+  </div>
+</div>
+{% endblock %}

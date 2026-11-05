@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% import "icons.html" as i %}
+{% block body %}
+<div class="repo-hdr">
+  <div class="container">
+    <div class="repo-title">
+      {{ i.typeicon(r.type) }}
+      <a class="owner" href="/{{ r.owner }}"><img class="avatar {% if r.owner_kind == 'org' %}org{% endif %}" src="/avatars/{{ r.owner }}.svg" width="22" height="22" alt="">{{ r.owner }}</a>
+      <span class="slash">/</span>
+      <span class="name">{{ r.name }}</span>
+      {% if r.private %}<span class="badge private">{{ i.lock() }}&nbsp;private</span>{% endif %}
+      <button class="copy" data-copy="{{ r.full_id }}" title="Copy repo id">{{ i.copy() }}</button>
+      <div class="flex items-center gap-2 ml-auto">
+        {% if me %}
+        <form method="post" action="/{{ r.web_path|safe }}/like">
+          <button class="like-btn {% if liked %}on{% endif %}" type="submit" title="{% if liked %}Unlike{% else %}Like{% endif %}">
+            <span>{{ i.heart(liked) }} {% if liked %}Unlike{% else %}Like{% endif %}</span>
+            <span>{{ r.likes }}</span>
+          </button>
+        </form>
+        {% else %}
+        <span class="like-btn"><span>{{ i.heart() }} Like</span><span>{{ r.likes }}</span></span>
+        {% endif %}
+      </div>
+    </div>
+    <div class="repo-tags">
+      {% for t in tags[:14] %}
+        {% if t[:8] == "license:" %}<span class="tag"><span class="k">License:</span>{{ t[8:] }}</span>
+        {% elif t[:8] == "dataset:" %}<span class="tag"><span class="k">Dataset:</span>{{ t[8:] }}</span>
+        {% elif t[:11] == "base_model:" %}<span class="tag"><span class="k">Base model:</span>{{ t[11:] }}</span>
+        {% else %}<span class="tag">{{ t }}</span>{% endif %}
+      {% endfor %}
+      <span class="tag"><span class="k">Downloads last month</span>{{ r.downloads|compact }}</span>
+    </div>
+    <div class="tabs">
+      <a class="{% if tab == 'card' %}active{% endif %}" href="/{{ r.web_path|safe }}">{{ i.card() }} {{ "Dataset card" if r.type == "dataset" else ("Space card" if r.type == "space" else "Model card") }}</a>
+      <a class="{% if tab == 'files' %}active{% endif %}" href="/{{ r.web_path|safe }}/tree/main">{{ i.file() }} Files and versions <span class="n">{{ file_count }}</span></a>
+      <a class="{% if tab == 'commits' %}active{% endif %}" href="/{{ r.web_path|safe }}/commits/main">{{ i.history() }} Commits</a>
+      <a class="{% if tab == 'community' %}active{% endif %}" href="/{{ r.web_path|safe }}/community">{{ i.chat() }} Community <span class="n">{{ n_discussions }}</span></a>
+      {% if can_admin %}<a class="{% if tab == 'settings' %}active{% endif %}" href="/{{ r.web_path|safe }}/settings">{{ i.gear() }} Settings</a>{% endif %}
+      <div class="right">
+        <div class="dropdown">
+          <a class="btn sm" href="#" tabindex="0" onclick="return false">Use this {{ r.type }}</a>
+          <div class="menu right use-menu">
+            <div class="label">huggingface_hub (this process)</div>
+            <a href="#" data-copy="import hugginghub
+hugginghub.connect(&quot;{{ base }}&quot;, token=&quot;hf_...&quot;)
+from huggingface_hub import snapshot_download
+snapshot_download(&quot;{{ r.full_id }}{{ '' if r.type == 'model' else '' }}&quot;, local_dir=&quot;./{{ r.name }}&quot;)" onclick="return false">Copy Python snippet</a>
+            {% if r.type != 'model' %}<a href="#" data-copy="import hugginghub
+hugginghub.connect(&quot;{{ base }}&quot;, token=&quot;hf_...&quot;)
+from huggingface_hub import snapshot_download
+snapshot_download(&quot;{{ r.full_id }}&quot;, repo_type=&quot;{{ r.type }}&quot;, local_dir=&quot;./{{ r.name }}&quot;)" onclick="return false">Copy Python snippet (repo_type)</a>{% endif %}
+            <div class="label">transformers</div>
+            <a href="#" data-copy="from transformers import AutoTokenizer
+tok = AutoTokenizer.from_pretrained(&quot;{{ r.full_id }}&quot;)" onclick="return false">Copy AutoTokenizer snippet</a>
+            <div class="label">Shell</div>
+            <a href="#" data-copy="export HF_ENDPOINT={{ base }}
+export HF_TOKEN=hf_...
+hf download {{ r.full_id }}{{ ' --repo-type ' + r.type if r.type != 'model' else '' }} --local-dir ./{{ r.name }}" onclick="return false">Copy env + hf download</a>
+            <div class="label">Git</div>
+            <a href="#" data-copy="git clone {{ base }}/{{ r.web_path|safe }}" onclick="return false">Copy git clone URL</a>
+            <a href="/docs">Full instructions →</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% block repobody %}{% endblock %}
+{% endblock %}

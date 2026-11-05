@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% import "macros.html" as m %}
+{% import "icons.html" as i %}
+{% block body %}
+{% if not me %}
+<section class="hero container">
+  <div class="emoji">🤗</div>
+  <h1>The AI community, self-hosted.</h1>
+  <p>Host models, datasets and Spaces on your own infrastructure. Works with <code>huggingface_hub</code>, <code>transformers</code> and <code>git</code>.</p>
+  <div class="flex gap-2" style="justify-content:center">
+    {% if open_signup %}<a class="btn dark" href="/join">Sign Up</a>{% endif %}
+    <a class="btn" href="/models">Explore models</a>
+  </div>
+</section>
+{% endif %}
+<div class="container">
+  {% if me %}
+  <div class="feed">
+    <aside>
+      <div class="flex items-center gap-3" style="margin-bottom:1.25rem">
+        <img class="avatar" src="{{ me.avatar }}" width="44" height="44" alt="">
+        <div><div style="font-weight:600">{{ me.fullname }}</div><div class="muted small">{{ me.name }}</div></div>
+      </div>
+      <div class="flex gap-2 wrap" style="margin-bottom:1.5rem">
+        <a class="btn sm" href="/new">+ New Model</a><a class="btn sm" href="/new-dataset">+ Dataset</a><a class="btn sm" href="/new-space">+ Space</a>
+      </div>
+      <h3 class="section-title small">Your repositories</h3>
+      {% if mine %}<div class="grid">{% for r in mine %}{{ m.rcard(r) }}{% endfor %}</div>
+      {% else %}<div class="empty-card small">You have no repositories yet.</div>{% endif %}
+    </aside>
+    <section>
+      <h2 class="section-title">{{ i.model() }} Recently updated models <span class="count">{{ n_models }}</span></h2>
+      {% if models %}{{ m.grid(models) }}{% else %}<div class="empty-card">No models yet.</div>{% endif %}
+      <h2 class="section-title" style="margin-top:2rem">{{ i.dataset() }} Datasets <span class="count">{{ n_datasets }}</span></h2>
+      {% if datasets %}{{ m.grid(datasets) }}{% else %}<div class="empty-card">No datasets yet.</div>{% endif %}
+      <h2 class="section-title" style="margin-top:2rem">{{ i.space() }} Spaces <span class="count">{{ n_spaces }}</span></h2>
+      {% if spaces %}{{ m.grid(spaces, "cols-3") }}{% else %}<div class="empty-card">No Spaces yet.</div>{% endif %}
+    </section>
+  </div>
+  {% else %}
+  <div class="home-cols">
+    <section><h2 class="section-title">{{ i.model() }} Models <span class="count">{{ n_models }}</span></h2>{% if models %}<div class="grid">{% for r in models %}{{ m.rcard(r) }}{% endfor %}</div>{% else %}<div class="empty-card small">No models yet.</div>{% endif %}<p><a class="small muted" href="/models">Browse all models →</a></p></section>
+    <section><h2 class="section-title">{{ i.dataset() }} Datasets <span class="count">{{ n_datasets }}</span></h2>{% if datasets %}<div class="grid">{% for r in datasets %}{{ m.rcard(r) }}{% endfor %}</div>{% else %}<div class="empty-card small">No datasets yet.</div>{% endif %}<p><a class="small muted" href="/datasets">Browse all datasets →</a></p></section>
+    <section><h2 class="section-title">{{ i.space() }} Spaces <span class="count">{{ n_spaces }}</span></h2>{% if spaces %}<div class="grid">{% for r in spaces %}{{ m.rcard(r) }}{% endfor %}</div>{% else %}<div class="empty-card small">No Spaces yet.</div>{% endif %}<p><a class="small muted" href="/spaces">Browse all Spaces →</a></p></section>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

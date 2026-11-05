@@ -1,0 +1,64 @@
+{% extends "repo/base.html" %}
+{% import "icons.html" as i %}
+{% block repobody %}
+<div class="container">
+  <div class="repo-main" style="padding-right:0;border-right:0">
+    <div class="branch-bar">
+      <div class="dropdown">
+        <a class="branch-select" href="#" tabindex="0" onclick="return false">{{ i.branch() }} {{ rev }} <span class="muted">▾</span></a>
+        <div class="menu">
+          <div class="label">Branches</div>
+          {% for b in branches %}<a href="/{{ r.web_path|safe }}/tree/{{ b.name }}{% if path %}/{{ path }}{% endif %}">{{ b.name }}</a>{% endfor %}
+          {% if git_tags %}<div class="label">Tags</div>{% for t in git_tags %}<a href="/{{ r.web_path|safe }}/tree/{{ t.name }}{% if path %}/{{ path }}{% endif %}">{{ t.name }}</a>{% endfor %}{% endif %}
+          {% if prs %}<div class="label">Pull requests</div>{% for p in prs %}<a href="/{{ r.web_path|safe }}/tree/{{ p.name|replace("refs/","") }}{% if path %}/{{ path }}{% endif %}">{{ p.name }}</a>{% endfor %}{% endif %}
+        </div>
+      </div>
+      <nav class="crumbs">
+        <a href="/{{ r.web_path|safe }}/tree/{{ rev }}">{{ r.name }}</a>
+        {% for c in crumbs %}<span class="sep">/</span><a href="/{{ r.web_path|safe }}/tree/{{ rev }}/{{ c.path }}">{{ c.name }}</a>{% endfor %}
+      </nav>
+      <div class="flex items-center gap-2 ml-auto">
+        <a class="btn sm" href="/{{ r.web_path|safe }}/commits/{{ rev }}">{{ i.history() }} History</a>
+        {% if can_write %}
+        <div class="dropdown">
+          <a class="btn sm" href="#" tabindex="0" onclick="return false">Contribute ▾</a>
+          <div class="menu right">
+            <a href="/{{ r.web_path|safe }}/upload/{{ rev }}">Upload files</a>
+            <a href="/{{ r.web_path|safe }}/new-file/{{ rev }}">Create new file</a>
+            <a href="/{{ r.web_path|safe }}/upload/{{ rev }}?pr=1">Upload files as a PR</a>
+          </div>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+
+    {% if last_commit %}
+    <div class="last-commit">
+      <img class="avatar" src="/avatars/{{ last_commit.author }}.svg" width="20" height="20" alt="">
+      <span class="msg truncate"><b>{{ last_commit.author }}</b> {{ last_commit.title }}</span>
+      <a class="sha" href="/{{ r.web_path|safe }}/commit/{{ last_commit.id }}">{{ last_commit.id|short }}</a>
+      <span class="muted xs">{{ last_commit.date|ago }}</span>
+      <a class="small muted ml-auto" href="/{{ r.web_path|safe }}/commits/{{ rev }}{% if path %}/{{ path }}{% endif %}">history</a>
+    </div>
+    {% endif %}
+
+    <div class="file-table {% if not last_commit %}alone{% endif %}">
+      {% if path %}
+      <div class="frow"><div class="fname">{{ i.folder() }}<a href="/{{ r.web_path|safe }}/tree/{{ rev }}{% if parent_path %}/{{ parent_path }}{% endif %}">..</a></div><div class="fsize"></div><div class="fcommit"></div><div class="fdate"></div></div>
+      {% endif %}
+      {% for f in files %}
+      <div class="frow">
+        <div class="fname">
+          {% if f.type == "directory" %}{{ i.folder() }}<a href="/{{ r.web_path|safe }}/tree/{{ rev }}/{{ f.path }}">{{ f.name }}</a>
+          {% else %}{{ i.file() }}<a href="/{{ r.web_path|safe }}/blob/{{ rev }}/{{ f.path }}">{{ f.name }}</a>{% if f.lfs %}<span class="lfs">LFS</span>{% endif %}{% endif %}
+        </div>
+        <div class="fsize">{% if f.type == "file" %}{{ f.size|human_size }}{% endif %}</div>
+        <div class="fcommit truncate">{% if f.lastCommit %}<a href="/{{ r.web_path|safe }}/commit/{{ f.lastCommit.id }}" title="{{ f.lastCommit.title }}">{{ f.lastCommit.title }}</a>{% endif %}</div>
+        <div class="fdate">{% if f.lastCommit %}{{ f.lastCommit.date|ago }}{% endif %}</div>
+      </div>
+      {% endfor %}
+      {% if not files %}<div class="frow"><div class="fname muted">This {{ r.type }} is empty.</div></div>{% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

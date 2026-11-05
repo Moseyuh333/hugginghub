@@ -1,0 +1,47 @@
+{% extends "admin/base.html" %}
+{% block admin %}
+<h2>Users</h2>
+{% if flash %}<div class="alert ok">{{ flash }}</div>{% endif %}
+{% if error %}<div class="alert error">{{ error }}</div>{% endif %}
+
+<form class="panel" method="post" action="/admin/users/new">
+  <h3>Create a user</h3>
+  <div class="flex gap-2 wrap" style="align-items:center">
+    <input class="input" name="name" placeholder="username" style="max-width:14rem" required>
+    <input class="input" name="password" type="password" placeholder="password (min 8 chars)" style="max-width:16rem" required>
+    <label class="small" style="display:flex;align-items:center;gap:.35rem"><input type="checkbox" name="is_admin" value="1"> administrator</label>
+    <button class="btn dark" type="submit">Create user</button>
+  </div>
+</form>
+
+<div class="file-table alone">
+  <div class="frow head" style="grid-template-columns:minmax(0,1.2fr) 6rem 6rem minmax(0,1.6fr);font-weight:600;color:var(--g500);font-size:.8rem">
+    <div>User</div><div>Repos</div><div>Tokens</div><div>Actions</div>
+  </div>
+  {% for u in users %}
+  <div class="frow" style="grid-template-columns:minmax(0,1.2fr) 6rem 6rem minmax(0,1.6fr)">
+    <div class="fname">
+      <img class="avatar" src="{{ u.avatar }}" width="22" height="22" alt="">
+      <a href="/{{ u.name }}">{{ u.name }}</a>
+      {% if u.is_admin %}<span class="badge">admin</span>{% endif %}
+      {% if u.kind == "org" %}<span class="lfs">org</span>{% endif %}
+    </div>
+    <div class="fcommit">{{ u.num_repos }}</div>
+    <div class="fcommit">{{ u.num_tokens }}</div>
+    <div class="fname" style="gap:.4rem;justify-content:flex-start">
+      {% if u.kind == "user" %}
+      <form method="post" action="/admin/users/{{ u.name }}/admin"><button class="btn" type="submit">{% if u.is_admin %}Revoke admin{% else %}Make admin{% endif %}</button></form>
+      <form method="post" action="/admin/users/{{ u.name }}/password" onsubmit="return confirm('Reset password for {{ u.name }}? Sessions will be signed out.')">
+        <input class="input" name="password" type="password" placeholder="new password" style="max-width:9rem;padding:.3rem .6rem" required>
+        <button class="btn" type="submit">Set</button>
+      </form>
+      {% endif %}
+      <form method="post" action="/admin/users/{{ u.name }}/delete">
+        <input class="input" name="confirm" placeholder="type name to delete" style="max-width:9rem;padding:.3rem .6rem" required>
+        <button class="btn danger" type="submit">Delete</button>
+      </form>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% endblock %}

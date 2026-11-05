@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block body %}
+<div class="container">
+  <div class="thread page">
+    <a class="small muted" href="/{{ r.web_path|safe }}/community">← Back</a>
+    <h1 style="margin-top:.5rem">{{ "New pull request" if is_pr else "New discussion" }}</h1>
+    {% if error %}<div class="alert error">{{ error }}</div>{% endif %}
+    <form method="post" action="/{{ r.web_path|safe }}/community/new">
+      <input type="hidden" name="pr" value="{{ 1 if is_pr else 0 }}">
+      <label class="field"><span>Title</span><input class="input" name="title" required minlength="3" placeholder="Short and descriptive"></label>
+      <label class="field"><span>Description</span><textarea class="input" name="description" placeholder="What is this about? Markdown supported."></textarea></label>
+      {% if is_pr %}<div class="alert">A branch <code>refs/pr/N</code> will be created. Push commits to it with <code>git push {{ base }}/{{ r.web_path|safe }} HEAD:refs/pr/N</code>, or upload files from the web UI.</div>{% endif %}
+      <button class="btn dark" type="submit">Create {{ "pull request" if is_pr else "discussion" }}</button>
+    </form>
+  </div>
+</div>
+{% endblock %}

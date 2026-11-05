@@ -1,0 +1,21 @@
+{% extends "admin/base.html" %}
+{% block admin %}
+<h2>Server</h2>
+<div class="panel">
+  <table class="info-table">
+    <tr><td class="k">Site name</td><td>{{ info.site_name }}</td></tr>
+    <tr><td class="k">Version</td><td>{{ info.version }}</td></tr>
+    <tr><td class="k">Bind</td><td><code>{{ info.bind }}</code></td></tr>
+    <tr><td class="k">Data directory</td><td><code>{{ info.data_dir }}</code></td></tr>
+    <tr><td class="k">Public URL</td><td><code>{{ info.public_url }}</code></td></tr>
+    <tr><td class="k">Storage</td><td>{{ info.storage }}</td></tr>
+    <tr><td class="k">LFS threshold</td><td>{{ info.lfs_threshold }}</td></tr>
+    <tr><td class="k">Open sign-up</td><td>{{ info.open_signup }} <span class="muted small">(set via HH_OPEN_SIGNUP)</span></td></tr>
+    <tr><td class="k">Git binary</td><td><code>{{ info.git }}</code></td></tr>
+    <tr><td class="k">Database size</td><td>{{ info.db_size }}</td></tr>
+    <tr><td class="k">Repositories</td><td>{{ info.repo_count }}</td></tr>
+    <tr><td class="k">API tokens</td><td>{{ info.token_count }}</td></tr>
+    <tr><td class="k">Web sessions</td><td>{{ info.session_count }}</td></tr>
+  </table>
+</div>
+{% endblock %}

@@ -1,0 +1,18 @@
+[build-system]
+requires = ["setuptools>=64"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "hugginghub"
+version = "0.1.0"
+description = "Point huggingface_hub at your own self-hosted HuggingHub server"
+readme = "README.md"
+requires-python = ">=3.9"
+license = { text = "PolyForm-Noncommercial-1.0.0" }
+dependencies = ["huggingface_hub>=0.23"]
+
+[project.scripts]
+hugginghub = "hugginghub.cli:main"
+
+[tool.setuptools]
+packages = ["hugginghub"]

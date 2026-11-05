@@ -1,0 +1,44 @@
+{% extends "repo/base.html" %}
+{% import "icons.html" as i %}
+{% block repobody %}
+<div class="container">
+  <div class="repo-main" style="padding-right:0;border-right:0">
+    <div class="branch-bar">
+      <div class="dropdown">
+        <a class="branch-select" href="#" tabindex="0" onclick="return false">{{ i.branch() }} {{ rev }} <span class="muted">▾</span></a>
+        <div class="menu">{% for b in branches %}<a href="/{{ r.web_path|safe }}/blob/{{ b.name }}/{{ path }}">{{ b.name }}</a>{% endfor %}</div>
+      </div>
+      <nav class="crumbs">
+        <a href="/{{ r.web_path|safe }}/tree/{{ rev }}">{{ r.name }}</a>
+        {% for c in crumbs %}<span class="sep">/</span>{% if loop.last %}<span>{{ c.name }}</span>{% else %}<a href="/{{ r.web_path|safe }}/tree/{{ rev }}/{{ c.path }}">{{ c.name }}</a>{% endif %}{% endfor %}
+      </nav>
+      <div class="flex items-center gap-2 ml-auto">
+        <a class="btn sm" href="/{{ r.web_path|safe }}/raw/{{ rev }}/{{ path }}">Raw</a>
+        <a class="btn sm" href="/{{ r.web_path|safe }}/resolve/{{ rev }}/{{ path }}?download=true">Download</a>
+        <a class="btn sm" href="/{{ r.web_path|safe }}/commits/{{ rev }}/{{ path }}">{{ i.history() }} History</a>
+        {% if can_write %}<a class="btn sm" href="/{{ r.web_path|safe }}/edit/{{ rev }}/{{ path }}">Edit</a>{% endif %}
+      </div>
+    </div>
+    <div class="blob-hdr">
+      <b class="mono small">{{ size|human_size }}</b>
+      {% if lfs %}<span class="lfs">LFS</span><span class="xs muted mono">{{ lfs }}</span>{% endif %}
+      {% if last_commit %}<span class="muted xs ml-auto">{{ last_commit.title }} · {{ last_commit.date|ago }}</span>{% endif %}
+    </div>
+    <div class="blob">
+      {% if binary %}
+        <div class="binary">
+          <div style="font-size:2.5rem">📦</div>
+          <p>Binary file ({{ size|human_size }})</p>
+          <a class="btn" href="/{{ r.web_path|safe }}/resolve/{{ rev }}/{{ path }}?download=true">Download file</a>
+        </div>
+      {% elif is_markdown %}
+        <article class="prose">{{ content_html|safe }}</article>
+      {% else %}
+        <table><tbody>
+        {% for line in lines %}<tr><td class="ln">{{ loop.index }}</td><td class="lc">{{ line }}</td></tr>{% endfor %}
+        </tbody></table>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

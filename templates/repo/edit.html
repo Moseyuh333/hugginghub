@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block body %}
+<div class="container page">
+  <div class="thread">
+    <h1 style="font-size:1.5rem;font-weight:700">Edit <code>{{ path }}</code></h1>
+    <p class="muted small">on branch <code>{{ rev }}</code></p>
+    {% if error %}<div class="alert error">{{ error }}</div>{% endif %}
+    <form method="post" action="/{{ r.web_path|safe }}/edit/{{ rev }}/{{ path }}" class="panel">
+      <textarea class="input" name="content" style="min-height:24rem;font-family:var(--mono);font-size:.85rem">{{ content }}</textarea>
+      <label class="field" style="margin-top:1rem"><span>Commit message</span><input class="input" name="message" placeholder="Update {{ path }}"></label>
+      <button class="btn dark" type="submit">Commit changes</button>
+    </form>
+  </div>
+</div>
+{% endblock %}

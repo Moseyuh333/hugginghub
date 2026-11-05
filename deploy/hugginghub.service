@@ -1,0 +1,18 @@
+[Unit]
+Description=HuggingHub - self-hosted Hugging Face Hub compatible server
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/opt/hugginghub
+Environment=HH_DATA=/var/lib/hugginghub
+Environment=HH_BIND=0.0.0.0:80
+Environment=RUST_LOG=info,hugginghub=debug
+ExecStart=/opt/hugginghub/target/release/hugginghub
+Restart=always
+RestartSec=2
+
+[Install]
+WantedBy=multi-user.target

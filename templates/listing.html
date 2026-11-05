@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% import "macros.html" as m %}
+{% import "icons.html" as i %}
+{% block body %}
+<div class="container page">
+  <div class="listing">
+    <aside class="sidebar-filters">
+      {% if rtype == "model" %}
+      <h3>Tasks</h3>
+      <div class="tags">
+        {% for t in ["text-generation","text-classification","token-classification","question-answering","translation","summarization","fill-mask","feature-extraction","sentence-similarity","text-to-image","image-classification","object-detection","automatic-speech-recognition","text-to-speech"] %}
+        <a class="tag" href="?pipeline_tag={{ t }}" {% if filter == t %}style="border-color:var(--g500)"{% endif %}>{{ t }}</a>
+        {% endfor %}
+      </div>
+      {% elif rtype == "space" %}
+      <h3>SDK</h3>
+      <div class="tags">{% for t in ["gradio","streamlit","docker","static"] %}<a class="tag" href="?sdk={{ t }}">{{ t }}</a>{% endfor %}</div>
+      {% else %}
+      <h3>Modalities</h3>
+      <div class="tags">{% for t in ["text","image","audio","tabular","video","3d"] %}<span class="tag">{{ t }}</span>{% endfor %}</div>
+      {% endif %}
+      {% if filter %}<a class="small muted" href="?">✕ Clear filter</a>{% endif %}
+    </aside>
+    <section>
+      <div class="list-head">
+        <h1>{{ title }} <span class="count">{{ total }}</span></h1>
+        <form method="get" class="flex gap-2"><input class="filter-input" name="search" value="{{ search }}" placeholder="Filter by name"><input type="hidden" name="sort" value="{{ sort }}"></form>
+        {% if me %}<a class="btn sm" href="/new{% if rtype != 'model' %}-{{ rtype }}{% endif %}">+ New</a>{% endif %}
+        <div class="dropdown ml-auto">
+          <a class="branch-select" href="#" tabindex="0" onclick="return false">Sort: {{ sort|title }}</a>
+          <div class="menu right">
+            {% for s in ["trending","likes","downloads","created","updated"] %}<a href="?sort={{ s }}&search={{ search }}">{{ s|title }}</a>{% endfor %}
+          </div>
+        </div>
+      </div>
+      {% if repos %}
+        {{ m.grid(repos, "cols-2" if rtype != "space" else "cols-3") }}
+      {% else %}
+        <div class="empty-card">No {{ plural }} found.{% if me %} <a href="/new{% if rtype != 'model' %}-{{ rtype }}{% endif %}" style="text-decoration:underline">Create one</a>.{% endif %}</div>
+      {% endif %}
+      {% if pages > 1 %}
+      <div class="pager">
+        {% if page > 0 %}<a href="?p={{ page - 1 }}&sort={{ sort }}&search={{ search }}">← Previous</a>{% endif %}
+        {% for p in range(pages) %}{% if p == page %}<span class="cur">{{ p + 1 }}</span>{% else %}<a href="?p={{ p }}&sort={{ sort }}&search={{ search }}">{{ p + 1 }}</a>{% endif %}{% endfor %}
+        {% if page + 1 < pages %}<a href="?p={{ page + 1 }}&sort={{ sort }}&search={{ search }}">Next →</a>{% endif %}
+      </div>
+      {% endif %}
+    </section>
+  </div>
+</div>
+{% endblock %}

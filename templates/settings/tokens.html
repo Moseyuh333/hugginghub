@@ -1,0 +1,31 @@
+{% extends "settings/base.html" %}
+{% block settings %}
+<h2>Access tokens</h2>
+<p class="small muted">Use these instead of your password for <code>huggingface_hub</code>, the CLI and git over HTTPS.</p>
+{% if new_token %}
+<div class="panel">
+  <h3>Your new token (copy it now, it won't be shown again)</h3>
+  <div class="new-token" data-copy="{{ new_token }}">{{ new_token }}</div>
+  <p class="small muted" style="margin:.75rem 0 0">Try it: <code>HF_TOKEN={{ new_token }} python -c "import hugginghub; hugginghub.connect('{{ base }}')"</code></p>
+</div>
+{% endif %}
+{% if flash %}<div class="alert ok">{{ flash }}</div>{% endif %}
+<form class="panel" method="post" action="/settings/tokens">
+  <h3>Create a token</h3>
+  <div class="flex gap-2 wrap">
+    <input class="input" name="name" placeholder="Token name" style="max-width:18rem" required>
+    <select class="input" name="role" style="max-width:12rem"><option value="write">write</option><option value="read">read</option></select>
+    <button class="btn dark" type="submit">Create token</button>
+  </div>
+</form>
+<div class="panel">
+  <h3>Your tokens</h3>
+  {% for t in tokens %}
+  <div class="token-row">
+    <b>{{ t.name }}</b><span class="mono xs muted">{{ t.prefix }}…</span><span class="badge gray">{{ t.role }}</span>
+    <span class="xs muted ml-auto">created {{ t.created_at|ago }}{% if t.last_used %} · last used {{ t.last_used|ago }}{% endif %}</span>
+    <form method="post" action="/settings/tokens/{{ t.id }}/delete"><button class="btn sm danger" type="submit">Delete</button></form>
+  </div>
+  {% else %}<p class="small muted">No tokens yet.</p>{% endfor %}
+</div>
+{% endblock %}

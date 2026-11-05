@@ -1,0 +1,142 @@
+{% extends "base.html" %}
+{% block body %}
+<div class="container page">
+  <div class="thread docs">
+    <div class="flex items-center gap-3" style="margin-bottom:.75rem">
+      <span class="hero-emoji" style="font-size:2.5rem;margin:0">🤗</span>
+      <h1 style="font-size:1.75rem;font-weight:700;margin:0">How to use this server</h1>
+    </div>
+    <p class="lead">This instance speaks the Hugging Face Hub HTTP API. Any tool built on
+      <code>huggingface_hub</code> -- <code>transformers</code>, <code>datasets</code>, <code>diffusers</code>,
+      the <code>hf</code> CLI -- works against it unchanged. The only thing you have to do is tell the
+      library where this server is.</p>
+
+    <h2 id="scope">Pick a scope: per process, per shell, or per machine</h2>
+    <p>There are three ways, and they differ only in <em>how much</em> gets redirected.</p>
+
+    <div class="scope-table">
+      <div class="row head">
+        <div>Scope</div><div>How</div><div>Applies to</div>
+      </div>
+      <div class="row">
+        <div><b>One Python program</b></div>
+        <div><span class="lbl">How</span><code>import hugginghub; hugginghub.connect(...)</code></div>
+        <div><span class="lbl">Applies to</span>that process, every module in it</div>
+      </div>
+      <div class="row">
+        <div><b>One shell session</b></div>
+        <div><span class="lbl">How</span><code>export HF_ENDPOINT=...</code></div>
+        <div><span class="lbl">Applies to</span>every program started from that shell</div>
+      </div>
+      <div class="row">
+        <div><b>The whole machine</b></div>
+        <div><span class="lbl">How</span><code>hugginghub install-hook</code></div>
+        <div><span class="lbl">Applies to</span>every Python process, no code change</div>
+      </div>
+    </div>
+
+    <div class="callout">
+      <b><code>connect()</code> is per <em>process</em>, not per file.</b>
+      It sets process-wide environment variables and patches <code>huggingface_hub</code>, so calling it
+      once anywhere is enough for the whole program -- you do <em>not</em> need it in every file that
+      imports <code>huggingface_hub</code>. It is also not machine-global: another Python process started
+      separately still talks to huggingface.co unless you use the env var or the hook.
+    </div>
+
+    <h2 id="python">1. One Python program</h2>
+    <p>Install the small shim once (it has no dependencies beyond <code>huggingface_hub</code>):</p>
+    <div class="code" data-copy="pip install ./python">pip install ./python</div>
+    <p>Then at the top of your entry point:</p>
+    <div class="code" data-copy='import hugginghub
+hugginghub.connect("{{ base }}", token="hf_...")'>import hugginghub
+hugginghub.connect("{{ base }}", token="hf_...")   # from /settings/tokens
+
+from huggingface_hub import HfApi
+HfApi().whoami()   # {"name": "you", ...}</div>
+    <p class="small muted">Call it before <code>import huggingface_hub</code> for the cleanest setup. If
+      <code>huggingface_hub</code> is already imported, <code>connect()</code> patches the loaded modules in
+      place instead, so either order works.</p>
+    <p>What it changes: <code>HF_ENDPOINT</code>, <code>HF_TOKEN</code> if given, and
+      <code>HF_HUB_DISABLE_XET=1</code> (this server stores large files as Git LFS objects, not Xet). It also
+      gives the instance its own download cache, <code>~/.cache/hugginghub/&lt;host&gt;</code>, so a repo named
+      like a public one never collides with it.</p>
+
+    <h2 id="env">2. One shell session, no code change</h2>
+    <p>Useful for scripts you can't edit, CI, or the <code>hf</code> CLI:</p>
+    <div class="code" data-copy='export HF_ENDPOINT={{ base }}
+export HF_TOKEN=hf_...
+export HF_HUB_DISABLE_XET=1'>export HF_ENDPOINT={{ base }}
+export HF_TOKEN=hf_...
+export HF_HUB_DISABLE_XET=1
+
+hf download admin/my-model --local-dir ./my-model</div>
+
+    <h2 id="hook">3. The whole machine</h2>
+    <p>One command makes every Python process on the box use this server, with no imports anywhere. It writes
+      a <code>.pth</code> file into site-packages and saves the endpoint to
+      <code>~/.config/hugginghub/config.json</code>.</p>
+    <div class="code" data-copy='hugginghub connect {{ base }} --token hf_...
+hugginghub install-hook'>hugginghub connect {{ base }} --token hf_...
+hugginghub install-hook
+
+hugginghub status          # what is configured
+hugginghub uninstall-hook  # undo it</div>
+    <p class="small muted">Disable it for a single process with <code>HUGGINGHUB_NO_AUTOHOOK=1</code>.</p>
+
+    <h2 id="tokens">Tokens</h2>
+    <p>Reads on public repos need no token. Uploads, private repos and writes need one: create it under
+      <a href="/settings/tokens" style="text-decoration:underline">Settings → Access tokens</a> (or
+      <code>hugginghub create-token &lt;user&gt;</code> on the server). Use it as <code>HF_TOKEN</code>, as
+      <code>token=</code> to <code>connect()</code>, or as the password in a git URL.</p>
+
+    <h2 id="upload">Upload and download</h2>
+    <div class="code" data-copy='from huggingface_hub import HfApi, snapshot_download
+api = HfApi()
+api.create_repo("me/my-model", exist_ok=True)
+api.upload_folder(repo_id="me/my-model", folder_path="./my-model")
+snapshot_download("me/my-model", local_dir="./copy")'>from huggingface_hub import HfApi, snapshot_download
+
+api = HfApi()
+api.create_repo("me/my-model", exist_ok=True)
+api.upload_folder(repo_id="me/my-model", folder_path="./my-model")
+snapshot_download("me/my-model", local_dir="./copy")</div>
+    <p class="small muted">Files of 10 MB or more are stored as Git LFS objects automatically.</p>
+
+    <h2 id="transformers">Loading a model</h2>
+    <p>Because <code>transformers</code> goes through <code>huggingface_hub</code>, redirecting the hub is all
+      it takes:</p>
+    <div class="code" data-copy='import hugginghub
+hugginghub.connect("{{ base }}", token="hf_...")
+
+from transformers import AutoTokenizer
+tok = AutoTokenizer.from_pretrained("admin/Qwen2.5-Demo-0.5B-Instruct")'>import hugginghub
+hugginghub.connect("{{ base }}", token="hf_...")
+
+from transformers import AutoTokenizer
+tok = AutoTokenizer.from_pretrained("admin/Qwen2.5-Demo-0.5B-Instruct")</div>
+
+    <h2 id="git">Git</h2>
+    <p>Every repo is a real git repository, so clone and push work directly:</p>
+    <div class="code" data-copy='git clone {{ base }}/admin/my-model
+git lfs install
+git push'>git clone {{ base }}/admin/my-model
+cd my-model
+git lfs install          # large files go through LFS
+git push</div>
+    <p class="small muted">For a private repo, put the token in the URL:
+      <code>git clone https://user:hf_...@{{ base|replace('http://','')|replace('https://','') }}/admin/my-model</code>.
+      Push to <code>refs/pr/N</code> to open a pull request, exactly like the Hub.</p>
+
+    <h2 id="surface">What is implemented</h2>
+    <div class="grid cols-2">
+      <div class="panel"><h3>Repos</h3><p class="small muted">create/delete/move, settings, repo_info, list_models/datasets/spaces, list_repo_tree, get_paths_info, list_repo_refs, list_repo_commits, branches, tags, super-squash</p></div>
+      <div class="panel"><h3>Files</h3><p class="small muted">resolve with Range requests, preupload, NDJSON commit, create_pr, hf_hub_download, snapshot_download, upload_file, upload_folder, LFS batch</p></div>
+      <div class="panel"><h3>Community</h3><p class="small muted">discussions, pull requests (refs/pr/N), comments, status changes, merge, likes, followers, user and org overviews</p></div>
+      <div class="panel"><h3>Git</h3><p class="small muted">clone, fetch, push over smart HTTP; git-lfs batch, upload, download; refs/pr/*</p></div>
+    </div>
+    <p class="small muted" style="margin-top:1rem">Not implemented, by design: inference endpoints, the Spaces
+      runtime, jobs, papers, collections and billing. A Space here is a git repo with a card -- running the
+      app is up to you.</p>
+  </div>
+</div>
+{% endblock %}

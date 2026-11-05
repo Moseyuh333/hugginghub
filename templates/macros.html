@@ -1,0 +1,25 @@
+{% import "icons.html" as i %}
+{% macro rcard(r) %}
+{% if r.type == "space" %}
+<a class="space-card c-{{ r.color_from }}" href="{{ r.path|safe }}">
+  <span class="likes">{{ i.heart() }} {{ r.likes }}</span>
+  <div class="emoji">{{ r.emoji }}</div>
+  <div class="title truncate">{{ r.title }}</div>
+  <div class="foot"><span class="truncate">{{ r.owner }}</span><span>{{ r.updated|ago }}</span></div>
+</a>
+{% else %}
+<a class="rcard" href="{{ r.path|safe }}">
+  <div class="head">{{ i.typeicon(r.type) }}<span class="truncate">{{ r.id }}</span>{% if r.private %}<span class="badge private">{{ i.lock() }}&nbsp;private</span>{% endif %}</div>
+  <div class="meta">
+    {% if r.pipeline %}<span>{{ r.pipeline }}</span><span class="dot">•</span>{% endif %}
+    <span>Updated {{ r.updated|ago }}</span>
+    {% if r.downloads %}<span class="dot">•</span><span>{{ i.download() }} {{ r.downloads|compact }}</span>{% endif %}
+    {% if r.likes %}<span class="dot">•</span><span>{{ i.heart() }} {{ r.likes|compact }}</span>{% endif %}
+  </div>
+</a>
+{% endif %}
+{% endmacro %}
+
+{% macro grid(repos, cols="cols-2") %}
+<div class="grid {{ cols }}">{% for r in repos %}{{ rcard(r) }}{% endfor %}</div>
+{% endmacro %}

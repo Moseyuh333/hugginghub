@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block body %}
+<div class="container page">
+  <div class="settings">
+    <nav>
+      <a class="{% if section == 'overview' %}active{% endif %}" href="/admin">Overview</a>
+      <a class="{% if section == 'users' %}active{% endif %}" href="/admin/users">Users</a>
+      <a class="{% if section == 'repos' %}active{% endif %}" href="/admin/repos">Repositories</a>
+      <a class="{% if section == 'orgs' %}active{% endif %}" href="/admin/orgs">Organizations</a>
+      <a class="{% if section == 'server' %}active{% endif %}" href="/admin/server">Server</a>
+    </nav>
+    <div>{% block admin %}{% endblock %}</div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% import "macros.html" as m %}
+{% import "icons.html" as i %}
+{% block body %}
+<div class="container">
+  <div class="profile">
+    <aside class="who">
+      <img class="avatar {% if u.kind == 'org' %}org{% endif %}" src="{{ u.avatar }}" width="120" height="120" alt="">
+      <h1>{{ u.fullname }}</h1>
+      <div class="handle">@{{ u.name }}</div>
+      {% if u.kind == "org" %}<span class="badge" style="margin-top:.5rem">Organization</span>{% endif %}
+      <div class="flex gap-2" style="margin:1rem 0">
+        {% if me and me.name != u.name %}
+        <form method="post" action="/{{ u.name }}/follow"><button class="btn sm" type="submit">{% if following %}Unfollow{% else %}Follow{% endif %}</button></form>
+        {% elif not me %}<a class="btn sm" href="/login">Follow</a>{% endif %}
+        {% if me and me.name == u.name %}<a class="btn sm" href="/settings/profile">Edit profile</a>{% endif %}
+      </div>
+      <div class="stats"><span><b>{{ num_followers }}</b> followers</span><span><b>{{ num_following }}</b> following</span></div>
+      {% if u.bio %}<div class="bio">{{ u.bio }}</div>{% endif %}
+      {% if u.website %}<div class="small"><a href="{{ u.website }}" style="text-decoration:underline" rel="nofollow noopener">{{ u.website }}</a></div>{% endif %}
+      {% if u.kind == "user" and orgs %}
+      <h3 class="small muted" style="margin:1.5rem 0 .5rem">Organizations</h3>
+      <div class="org-chips">{% for o in orgs %}<a href="/{{ o.name }}"><img class="avatar org" src="{{ o.avatar }}" width="28" height="28" alt="" title="{{ o.name }}"></a>{% endfor %}</div>
+      {% endif %}
+    </aside>
+    <section>
+      <div class="profile-section">
+        <h2 class="section-title">{{ i.model() }} Models <span class="count">{{ models|length }}</span></h2>
+        {% if models %}{{ m.grid(models) }}{% else %}<div class="empty-card small">No models.</div>{% endif %}
+      </div>
+      <div class="profile-section">
+        <h2 class="section-title">{{ i.dataset() }} Datasets <span class="count">{{ datasets|length }}</span></h2>
+        {% if datasets %}{{ m.grid(datasets) }}{% else %}<div class="empty-card small">No datasets.</div>{% endif %}
+      </div>
+      <div class="profile-section">
+        <h2 class="section-title">{{ i.space() }} Spaces <span class="count">{{ spaces|length }}</span></h2>
+        {% if spaces %}{{ m.grid(spaces, "cols-3") }}{% else %}<div class="empty-card small">No Spaces.</div>{% endif %}
+      </div>
+      {% if u.kind == "org" %}
+      <div class="profile-section">
+        <h2 class="section-title">Members <span class="count">{{ members|length }}</span></h2>
+        <div class="grid cols-2">
+          {% for m in members %}
+          <a class="rcard" href="/{{ m.name }}"><div class="head"><img class="avatar" src="{{ m.avatar }}" width="20" height="20" alt="">{{ m.fullname }}<span class="badge gray">{{ m.role }}</span></div><div class="meta">@{{ m.name }}</div></a>
+          {% endfor %}
+        </div>
+        {% if can_admin_org %}
+        <form class="panel" method="post" action="/{{ u.name }}/members" style="margin-top:1rem">
+          <h3>Add a member</h3>
+          <div class="flex gap-2"><input class="input" name="user" placeholder="username"><select class="input" name="role" style="max-width:10rem"><option>read</option><option>write</option><option selected>admin</option></select><button class="btn" type="submit">Add</button></div>
+        </form>
+        {% endif %}
+      </div>
+      {% endif %}
+    </section>
+  </div>
+</div>
+{% endblock %}

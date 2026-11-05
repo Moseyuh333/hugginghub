@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+{% import "icons.html" as i %}
+{% block body %}
+<div class="container">
+  <div class="thread page">
+    <div class="flex items-center gap-3" style="margin-bottom:.5rem">
+      <a class="small muted" href="/{{ r.web_path|safe }}/community">← Back to community</a>
+    </div>
+    <h1>{{ d.title }} <span class="num">#{{ d.num }}</span></h1>
+    <div class="flex items-center gap-2 wrap" style="margin-bottom:1rem">
+      <span class="state-pill {{ d.status }}">{{ d.status|title }}</span>
+      {% if d.is_pr %}<span class="badge purple">Pull request</span><span class="small muted">{{ d.target_ref or "refs/heads/main" }} ← refs/pr/{{ d.num }}</span>{% endif %}
+      <span class="small muted">{{ d.author or "deleted" }} · {{ d.created_at|ago }}</span>
+      {% if d.status == "open" or d.status == "draft" %}
+      <div class="flex gap-2 ml-auto">
+        {% if can_write and d.is_pr %}
+        <form method="post" action="/{{ r.web_path|safe }}/discussions/{{ d.num }}/merge"><button class="btn sm dark" type="submit">Merge pull request</button></form>
+        {% endif %}
+        <form method="post" action="/{{ r.web_path|safe }}/discussions/{{ d.num }}/status">
+          <input type="hidden" name="status" value="closed"><button class="btn sm" type="submit">Close {{ "pull request" if d.is_pr else "discussion" }}</button>
+        </form>
+      </div>
+      {% else %}
+      <form method="post" action="/{{ r.web_path|safe }}/discussions/{{ d.num }}/status" class="ml-auto">
+        <input type="hidden" name="status" value="open"><button class="btn sm" type="submit">Reopen</button>
+      </form>
+      {% endif %}
+    </div>
+
+    {% if d.is_pr and d.files %}
+    <div class="panel">
+      <h3>Files changed ({{ d.files|length }})</h3>
+      {% for f in d.files %}<div class="small mono">{{ f.path }} <span class="muted">+{{ f.additions }} −{{ f.deletions }}</span></div>{% endfor %}
+    </div>
+    {% endif %}
+
+    {% for e in events %}
+      {% if e.type == "comment" %}
+      <div class="event">
+        <img class="avatar" src="{{ e.avatar }}" width="34" height="34" alt="">
+        <div class="bubble">
+          <div class="bh"><b>{{ e.author }}</b><span class="muted xs">{{ e.created_at|ago }}</span>{% if e.hidden %}<span class="badge gray">hidden</span>{% endif %}{% if e.edited %}<span class="xs muted">edited</span>{% endif %}</div>
+          <div class="bb {% if e.hidden %}hidden-c{% endif %}">{% if e.hidden %}<em>This comment has been hidden.</em>{% else %}<div class="prose" style="font-size:.95rem">{{ e.html|safe }}</div>{% endif %}</div>
+        </div>
+      </div>
+      {% else %}
+      <div class="event small">
+        <span class="ico">{% if e.type == "commit" %}📝{% elif e.type == "status-change" %}🔀{% else %}✏️{% endif %}</span>
+        <span><b>{{ e.author }}</b>
+          {% if e.type == "commit" %}added commit <code>{{ e.subject }}</code> <span class="mono xs">{{ e.oid|short }}</span>
+          {% elif e.type == "status-change" %}changed status to <b>{{ e.data.status }}</b>
+          {% elif e.type == "title-change" %}changed the title from “{{ e.data.from }}” to “{{ e.data.to }}”
+          {% endif %}
+          · {{ e.created_at|ago }}</span>
+      </div>
+      {% endif %}
+    {% endfor %}
+
+    {% if me %}
+    <form class="comment-box" method="post" action="/{{ r.web_path|safe }}/discussions/{{ d.num }}/comment">
+      <textarea name="comment" placeholder="Write a comment..." required></textarea>
+      <div class="bar"><button class="btn sm dark" type="submit">Comment</button></div>
+    </form>
+    {% else %}
+    <div class="empty-card small"><a href="/login" style="text-decoration:underline">Log in</a> to comment.</div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

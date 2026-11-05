@@ -1,0 +1,24 @@
+{% extends "admin/base.html" %}
+{% block admin %}
+<h2>Overview</h2>
+<div class="stat-grid">
+  <div class="stat"><div class="num">{{ n_users }}</div><div class="cap">Users</div></div>
+  <div class="stat"><div class="num">{{ n_orgs }}</div><div class="cap">Organizations</div></div>
+  <div class="stat"><div class="num">{{ n_repos }}</div><div class="cap">Repositories</div></div>
+  <div class="stat"><div class="num">{{ n_private }}</div><div class="cap">Private</div></div>
+  <div class="stat"><div class="num">{{ n_discs }}</div><div class="cap">Discussions</div></div>
+  <div class="stat"><div class="num">{{ storage }}</div><div class="cap">Repo storage</div></div>
+</div>
+<h2 style="margin-top:2rem">Newest repositories</h2>
+<div class="file-table alone">
+  {% for repo in newest %}
+  <div class="frow" style="grid-template-columns:minmax(0,1fr) 8rem 7rem">
+    <div class="fname"><a href="/{{ repo.web_path|safe }}">{{ repo.full_id }}</a>{% if repo.private %}<span class="lfs">private</span>{% endif %}</div>
+    <div class="fcommit">{{ repo.owner }}</div>
+    <div class="fdate">{{ repo.updated }}</div>
+  </div>
+  {% else %}
+  <div class="frow"><div class="fname muted">No repositories yet.</div></div>
+  {% endfor %}
+</div>
+{% endblock %}

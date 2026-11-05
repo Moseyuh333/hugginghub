@@ -1,0 +1,50 @@
+{% extends "repo/base.html" %}
+{% import "icons.html" as i %}
+{% block repobody %}
+<div class="container page">
+  <div class="settings">
+    <nav>
+      <a class="active" href="/{{ r.web_path|safe }}/settings">General</a>
+      <a href="/{{ r.web_path|safe }}/settings#danger">Delete</a>
+    </nav>
+    <div>
+      <h2>Settings</h2>
+      {% if flash %}<div class="alert ok">{{ flash }}</div>{% endif %}
+      <form class="panel" method="post" action="/{{ r.web_path|safe }}/settings">
+        <h3>Repository visibility</h3>
+        <label class="radio-card"><input type="radio" name="visibility" value="public" {% if not r.private %}checked{% endif %}><div><b>Public</b><div class="small muted">Anyone can see this repository.</div></div></label>
+        <label class="radio-card"><input type="radio" name="visibility" value="private" {% if r.private %}checked{% endif %}><div><b>Private</b><div class="small muted">Only you and your organization members can see it.</div></div></label>
+        <h3 style="margin-top:1.25rem">Discussions</h3>
+        <label class="flex items-center gap-2 small"><input type="checkbox" name="discussions" value="1" {% if not r.discussions_disabled %}checked{% endif %}> Enable discussions and pull requests</label>
+        <div style="margin-top:1rem"><button class="btn dark" type="submit">Save changes</button></div>
+      </form>
+      {% if r.type == "space" %}
+      <form class="panel" method="post" action="/{{ r.web_path|safe }}/settings">
+        <h3>Space app</h3>
+        <p class="small muted" style="margin-top:0">How this Space's app runs. A Space with <code>sdk: static</code> and an <code>index.html</code> is served automatically at <code>/{{ r.web_path|safe }}/app</code>; for gradio/streamlit point the app URL at wherever you run it.</p>
+        <label class="small" for="app_url">App URL (optional)</label>
+        <input class="input" id="app_url" name="app_url" type="url" value="{{ r.app_url or '' }}" placeholder="https://host:port — leave empty for a static space" style="max-width:28rem">
+        <div class="hint" style="margin:.35rem 0 0">When set, this URL is embedded on the Space page. Leave empty for a static space.</div>
+        <div style="margin-top:1rem"><button class="btn dark" type="submit">Save</button></div>
+      </form>
+      {% endif %}
+      <form class="panel" method="post" action="/{{ r.web_path|safe }}/settings/rename">
+        <h3>Rename repository</h3>
+        <div class="flex gap-2 items-center">
+          <span class="muted small">{{ r.owner }} /</span>
+          <input class="input" name="name" value="{{ r.name }}" style="max-width:20rem">
+          <button class="btn" type="submit">Rename</button>
+        </div>
+      </form>
+      <div class="panel danger" id="danger">
+        <h3>Delete repository</h3>
+        <p class="small muted">This will permanently delete <b>{{ r.full_id }}</b>, its files and all discussions.</p>
+        <form method="post" action="/{{ r.web_path|safe }}/settings/delete" onsubmit="return confirm('Delete {{ r.full_id }}? This cannot be undone.')">
+          <input class="input" name="confirm" placeholder="Type {{ r.name }} to confirm" style="max-width:20rem;margin-bottom:.5rem">
+          <button class="btn danger" type="submit">Delete this repository</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

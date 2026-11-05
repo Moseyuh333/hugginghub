@@ -1,0 +1,26 @@
+{% extends "repo/base.html" %}
+{% import "icons.html" as i %}
+{% block repobody %}
+<div class="container">
+  <div class="repo-main" style="padding-right:0;border-right:0">
+    <div class="blob-hdr" style="margin-top:1.5rem;border-radius:.6rem;border:1px solid var(--g100)">
+      <img class="avatar" src="/avatars/{{ commit.author }}.svg" width="26" height="26" alt="">
+      <div><div><b>{{ commit.title }}</b></div><div class="xs muted"><b>{{ commit.author }}</b> committed {{ commit.date|ago }}</div></div>
+      <span class="sha mono xs ml-auto">{{ commit.id }}</span>
+    </div>
+    {% if commit.message %}
+    <div class="panel" style="margin-top:1rem"><div class="prose" style="font-size:.9rem">{{ commit.message_html|safe }}</div></div>
+    {% endif %}
+    <div class="commit-list" style="margin-top:1rem">
+      {% for f in files %}
+      <div class="commit-row">
+        <span class="badge {{ 'green' if f.status == 'added' else ('red' if f.status == 'removed' else 'gray') }}">{{ f.status }}</span>
+        <a class="mono small" href="/{{ r.web_path|safe }}/blob/{{ commit.id }}/{{ f.path }}">{{ f.path }}</a>
+        <span class="xs muted ml-auto"><span style="color:#047857">+{{ f.additions }}</span> <span style="color:#b91c1c">−{{ f.deletions }}</span></span>
+      </div>
+      {% endfor %}
+    </div>
+    {% if diff_html %}<div class="diff" style="margin-top:1rem">{{ diff_html|safe }}</div>{% endif %}
+  </div>
+</div>
+{% endblock %}

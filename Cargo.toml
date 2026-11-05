@@ -1,0 +1,39 @@
+[package]
+name = "hugginghub"
+version = "0.1.0"
+edition = "2021"
+description = "Self-hosted, Hugging Face Hub compatible model/dataset/space hosting"
+license = "PolyForm-Noncommercial-1.0.0"
+
+[dependencies]
+axum = { version = "0.8", features = ["multipart"] }
+tokio = { version = "1", features = ["full"] }
+tokio-util = { version = "0.7", features = ["io"] }
+tower-http = { version = "0.6", features = ["trace"] }
+futures-util = "0.3"
+bytes = "1"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+serde_yaml = "0.9"
+serde_urlencoded = "0.7"
+rusqlite = { version = "0.32", features = ["bundled"] }
+minijinja = { version = "2", features = ["serde"] }
+pulldown-cmark = "0.12"
+ammonia = "4"
+sha2 = "0.10"
+parking_lot = "0.12"
+hmac = "0.12"
+reqwest = { version = "0.12", default-features = false, features = ["rustls-tls", "stream"] }
+hex = "0.4"
+base64 = "0.22"
+rand = "0.8"
+argon2 = "0.5"
+chrono = "0.4"
+percent-encoding = "2"
+globset = "0.4"
+anyhow = "1"
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+
+[profile.release]
+opt-level = 3

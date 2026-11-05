@@ -1,0 +1,33 @@
+{% extends "repo/base.html" %}
+{% import "icons.html" as i %}
+{% block repobody %}
+<div class="container">
+  <div class="repo-main" style="padding-right:0;border-right:0">
+    <div class="list-head" style="margin-top:1.5rem">
+      <h2 class="section-title" style="margin:0">{{ i.chat() }} Community</h2>
+      <div class="filter-tabs">
+        <a class="{% if ftype == 'all' %}active{% endif %}" href="?type=all">All</a>
+        <a class="{% if ftype == 'discussion' %}active{% endif %}" href="?type=discussion">Discussions</a>
+        <a class="{% if ftype == 'pull_request' %}active{% endif %}" href="?type=pull_request">Pull requests</a>
+      </div>
+      {% if me %}<a class="btn sm dark ml-auto" href="/{{ r.web_path|safe }}/community/new{% if ftype == 'pull_request' %}?pr=1{% endif %}">+ New {{ "pull request" if ftype == "pull_request" else "discussion" }}</a>{% endif %}
+    </div>
+    {% if discussions %}
+    <div class="disc-list">
+      {% for d in discussions %}
+      <div class="disc-row">
+        {{ i.status(d.status, d.is_pr) }}
+        <div style="min-width:0">
+          <a class="title" href="/{{ r.web_path|safe }}/discussions/{{ d.num }}">{{ d.title }}</a> <span class="muted small">#{{ d.num }}</span>
+          <div class="sub">{% if d.is_pr %}<span class="badge purple">PR</span> {% endif %}{{ d.author }} opened {{ d.created_at|ago }}</div>
+        </div>
+        <span class="comments">{{ i.chat() }} {{ d.num_comments }}</span>
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty-card">No {{ "pull requests" if ftype == "pull_request" else "discussions" }} yet.{% if me %} <a href="/{{ r.web_path|safe }}/community/new" style="text-decoration:underline">Start one</a>.{% endif %}</div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

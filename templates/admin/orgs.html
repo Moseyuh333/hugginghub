@@ -1,0 +1,25 @@
+{% extends "admin/base.html" %}
+{% block admin %}
+<h2>Organizations</h2>
+<div class="file-table alone">
+  <div class="frow head" style="grid-template-columns:minmax(0,1.4fr) 6rem 6rem 7rem 8rem;font-weight:600;color:var(--g500);font-size:.8rem">
+    <div>Organization</div><div>Members</div><div>Repos</div><div>Created</div><div></div>
+  </div>
+  {% for o in orgs %}
+  <div class="frow" style="grid-template-columns:minmax(0,1.4fr) 6rem 6rem 7rem 8rem">
+    <div class="fname"><img class="avatar" src="{{ o.avatar }}" width="22" height="22" alt=""><a href="/{{ o.name }}">{{ o.name }}</a></div>
+    <div class="fcommit">{{ o.num_members }}</div>
+    <div class="fcommit">{{ o.num_repos }}</div>
+    <div class="fdate">{{ o.created_at[:10] }}</div>
+    <div class="fname" style="justify-content:flex-end">
+      <form method="post" action="/admin/users/{{ o.name }}/delete" onsubmit="return confirm('Delete the {{ o.name }} organization? Members are removed and its repos are deleted.')">
+        <input type="hidden" name="confirm" value="{{ o.name }}">
+        <button class="btn danger" type="submit">Delete</button>
+      </form>
+    </div>
+  </div>
+  {% else %}
+  <div class="frow"><div class="fname muted">No organizations.</div></div>
+  {% endfor %}
+</div>
+{% endblock %}

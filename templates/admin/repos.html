@@ -1,0 +1,34 @@
+{% extends "admin/base.html" %}
+{% block admin %}
+<h2>Repositories</h2>
+<form method="get" action="/admin/repos" class="panel" style="padding:.8rem 1rem">
+  <div class="flex gap-2">
+    <input class="input" name="q" value="{{ q or '' }}" placeholder="Filter by owner/name" style="max-width:20rem">
+    <button class="btn" type="submit">Filter</button>
+  </div>
+</form>
+<div class="file-table alone">
+  <div class="frow head" style="grid-template-columns:minmax(0,1.4fr) 6rem 8rem 6rem 8rem;font-weight:600;color:var(--g500);font-size:.8rem">
+    <div>Repository</div><div>Type</div><div>Owner</div><div>Storage</div><div></div>
+  </div>
+  {% for repo in repos %}
+  <div class="frow" style="grid-template-columns:minmax(0,1.4fr) 6rem 8rem 6rem 8rem">
+    <div class="fname">
+      <a href="/{{ repo.web_path|safe }}">{{ repo.full_id }}</a>
+      {% if repo.private %}<span class="lfs">private</span>{% endif %}
+    </div>
+    <div class="fcommit">{{ repo.type }}</div>
+    <div class="fcommit"><a href="/{{ repo.owner }}">{{ repo.owner }}</a></div>
+    <div class="fsize">{{ repo.used_storage }}</div>
+    <div class="fname" style="justify-content:flex-end">
+      <form method="post" action="/admin/repos/delete" onsubmit="return confirm('Delete {{ repo.full_id }}? This removes its git data and cannot be undone.')">
+        <input type="hidden" name="repo" value="{{ repo.full_id }}">
+        <button class="btn danger" type="submit">Delete</button>
+      </form>
+    </div>
+  </div>
+  {% else %}
+  <div class="frow"><div class="fname muted">No repositories match.</div></div>
+  {% endfor %}
+</div>
+{% endblock %}

@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block body %}
+<div class="container page">
+  <div class="list-head"><h1>Organizations <span class="count">{{ orgs|length }}</span></h1><a class="btn sm dark ml-auto" href="/organizations/new">+ New organization</a></div>
+  <div class="grid cols-2">
+    {% for o in orgs %}
+    <a class="rcard" href="/{{ o.name }}">
+      <div class="head"><img class="avatar org" src="{{ o.avatar }}" width="26" height="26" alt="">{{ o.fullname }}</div>
+      <div class="meta"><span>@{{ o.name }}</span><span class="dot">•</span><span>{{ o.num_members }} members</span>{% if o.role %}<span class="dot">•</span><span class="badge gray">{{ o.role }}</span>{% endif %}</div>
+    </a>
+    {% else %}
+    <div class="empty-card">You are not a member of any organization yet.</div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

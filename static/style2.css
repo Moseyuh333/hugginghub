@@ -1,0 +1,69 @@
+/* layout pieces: listings, repo pages, files, community, profiles */
+main{flex:1 0 auto}
+.page{padding:2rem 0}
+.section-title{display:flex;align-items:center;gap:.5rem;font-size:1.125rem;font-weight:600;margin:0 0 1rem}
+.section-title .count{color:var(--g400);font-weight:400}
+
+/* repo cards (listing grid) */
+.grid{display:grid;grid-template-columns:1fr;gap:.75rem}
+@media(min-width:768px){.grid.cols-2{grid-template-columns:1fr 1fr}}
+@media(min-width:1280px){.grid.cols-3{grid-template-columns:1fr 1fr 1fr}}
+.rcard{display:block;border:1px solid var(--g100);border-radius:.75rem;padding:.75rem 1rem;background:linear-gradient(to right,#fff,var(--g50) 140%);transition:border-color .1s}
+.rcard:hover{border-color:var(--g300);box-shadow:0 1px 2px rgba(0,0,0,.03)}
+.rcard .head{display:flex;align-items:center;gap:.5rem;font-family:var(--mono);font-size:.9rem;font-weight:500;color:var(--g800)}
+.rcard .meta{display:flex;align-items:center;gap:.4rem;flex-wrap:wrap;color:var(--g400);font-size:.8rem;margin-top:.25rem}
+.rcard .meta .dot{color:var(--g300)}
+.rcard .meta svg{vertical-align:-2px}
+.space-card{display:block;border-radius:.75rem;height:9.5rem;padding:.9rem 1rem;color:#fff;position:relative;overflow:hidden}
+.space-card .emoji{font-size:2.2rem;text-align:center;margin-top:.6rem}
+.space-card .title{font-weight:700;font-size:1.05rem;text-align:center;text-shadow:0 1px 2px rgba(0,0,0,.25)}
+.space-card .foot{position:absolute;bottom:.5rem;left:1rem;right:1rem;display:flex;justify-content:space-between;font-size:.75rem;opacity:.9}
+.space-card .likes{position:absolute;top:.6rem;right:.8rem;font-size:.75rem}
+.c-yellow{background:linear-gradient(135deg,#facc15,#f59e0b)}.c-red{background:linear-gradient(135deg,#f87171,#dc2626)}.c-green{background:linear-gradient(135deg,#4ade80,#16a34a)}
+.c-blue{background:linear-gradient(135deg,#60a5fa,#2563eb)}.c-indigo{background:linear-gradient(135deg,#818cf8,#4f46e5)}.c-purple{background:linear-gradient(135deg,#c084fc,#9333ea)}
+.c-pink{background:linear-gradient(135deg,#f472b6,#db2777)}.c-gray{background:linear-gradient(135deg,#9ca3af,#4b5563)}
+
+/* listing page */
+.listing{display:grid;grid-template-columns:1fr;gap:2rem}
+@media(min-width:1024px){.listing{grid-template-columns:18rem 1fr}}
+.sidebar-filters h3{font-size:.95rem;margin:0 0 .6rem}
+.sidebar-filters .tags{display:flex;flex-wrap:wrap;gap:.4rem;margin-bottom:1.5rem}
+.list-head{display:flex;align-items:center;gap:.75rem;margin-bottom:1rem;flex-wrap:wrap}
+.list-head h1{font-size:1.125rem}
+.list-head .count{color:var(--g400);font-size:1rem;font-weight:400}
+.filter-input{height:2rem;border:1px solid var(--g200);border-radius:.5rem;padding:0 .7rem;font-size:.875rem;width:14rem;outline:none}
+.pager{display:flex;gap:.25rem;justify-content:center;margin-top:2rem}
+.pager a,.pager span{min-width:2rem;height:2rem;display:flex;align-items:center;justify-content:center;border-radius:.4rem;font-size:.875rem;padding:0 .5rem}
+.pager a:hover{background:var(--g100)}.pager .cur{background:var(--g100);font-weight:600}
+
+/* repo header */
+.repo-hdr{background:linear-gradient(to top,var(--g50),#fff);border-bottom:1px solid var(--g100);padding-top:1.75rem}
+.repo-title{display:flex;align-items:center;flex-wrap:wrap;gap:.5rem;font-size:1.25rem;margin-bottom:.75rem}
+.repo-title .owner{color:var(--g500);display:flex;align-items:center;gap:.4rem}
+.repo-title .owner:hover{color:var(--g800)}
+.repo-title .slash{color:var(--g300)}
+.repo-title .name{font-weight:700;color:var(--g900);font-family:var(--mono);font-size:1.15rem}
+.repo-title .copy{color:var(--g400);cursor:pointer;background:none;border:0;padding:.2rem}
+.repo-tags{display:flex;flex-wrap:wrap;gap:.4rem;margin-bottom:1rem}
+.tabs{display:flex;gap:0;overflow-x:auto;margin-bottom:-1px}
+.tabs a{display:flex;align-items:center;gap:.4rem;padding:.6rem .9rem;border-bottom:2px solid transparent;font-size:.95rem;color:var(--g600);white-space:nowrap}
+.tabs a:hover{color:var(--g900)}
+.tabs a.active{border-color:var(--g800);color:var(--g900);font-weight:500}
+.tabs a .n{font-size:.75rem;background:var(--g100);border-radius:.3rem;padding:0 .35rem;color:var(--g600)}
+.tabs .right{margin-left:auto;display:flex;align-items:center;gap:.5rem}
+
+/* repo body */
+.repo-body{display:grid;grid-template-columns:1fr;gap:0}
+@media(min-width:1024px){.repo-body{grid-template-columns:minmax(0,1fr) 22rem}}
+.repo-main{padding:1.5rem 0;min-width:0}
+@media(min-width:1024px){.repo-main{padding-right:2rem;border-right:1px solid var(--g100)}}
+.repo-side{padding:1.5rem 0}
+@media(min-width:1024px){.repo-side{padding-left:2rem}}
+.side-block{margin-bottom:1.75rem}
+.side-block h3{font-size:.875rem;color:var(--g500);font-weight:500;margin-bottom:.4rem}
+.side-block .big{font-size:1.5rem;font-weight:600}
+.empty-card{border:1px dashed var(--g300);border-radius:.75rem;padding:2.5rem 1.5rem;text-align:center;color:var(--g500)}
+.code{background:var(--g50);border:1px solid var(--g100);border-radius:.5rem;padding:.75rem 1rem;font-family:var(--mono);font-size:.8125rem;overflow-x:auto;white-space:pre;color:var(--g700)}
+.meta-box{border:1px solid var(--g100);border-radius:.5rem;font-size:.8125rem;margin-bottom:1.5rem;overflow:hidden}
+.meta-box summary{padding:.5rem .75rem;cursor:pointer;color:var(--g600);background:var(--g50)}
+.meta-box pre{margin:0;padding:.75rem;overflow-x:auto;font-family:var(--mono)}
