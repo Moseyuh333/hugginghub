@@ -105,7 +105,11 @@
 }
 
 /* repo "Use this ..." menu */
-.use-menu{width:20rem;max-width:22rem}
+/* "Use this <type>" menu: a fixed-position popover placed by app.js. `.tabs`
+   is a scroll container (overflow-x:auto => overflow-y:auto), so an absolutely
+   positioned menu gets clipped there and makes the toolbar itself scroll; a
+   fixed box is neither clipped nor part of that scroll area. */
+.dropdown>.menu.use-menu{position:fixed;top:0;left:0;right:auto;width:20rem;max-width:min(20rem,calc(100vw - 1rem));max-height:min(20rem,calc(100vh - 1rem))}
 .use-menu .label{white-space:normal}
 .use-menu a{white-space:normal;line-height:1.35;font-size:.8125rem}
 
